@@ -1,0 +1,24 @@
+<included>
+    <appender name="LOGSTASH-TEST" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${LOGSTASH_HOST}</destination>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <pattern>
+                    {
+                        "project_name": "${PROJECT_NAME}",
+                        "service_name": "${APP_NAME}",
+                        "app_env": "${APP_ENV}"
+                    }
+                </pattern>
+                <mdc/>
+                <context/>
+                <logLevel/>
+                <message/>
+                <stackTrace/>
+            </providers>
+        </encoder>
+        <reconnectDelay>10000</reconnectDelay> <!-- 재연결 대기 시간 (10초) -->
+        <queueSize>512</queueSize> <!-- 전송할 로그의 큐 크기 -->
+        <connectionTimeout>3000</connectionTimeout> <!-- 연결 타임아웃 (3초) -->
+    </appender>
+</included>

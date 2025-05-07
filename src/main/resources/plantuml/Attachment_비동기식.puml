@@ -1,0 +1,9 @@
+@startuml
+actor Mobile
+Mobile -> FileAPI : 1. 파일 업로드 요청
+FileAPI -> Mobile : 2. 파일 리소스 메타데이터 응답
+Mobile -> GroupAPI : 3. POST 알림 생성 요청(Attachment 없이)
+GroupAPI -> Mobile : 4. 알림 생성 응답
+Mobile -> GroupAPI : 5. 알림 리소스 첨부 요청, POST /api/v1/notification-groups/{groupId}/notifications/{notificationId}/attachments 요청
+GroupAPI -> Mobile : 6. 알림 리소스 첨부 응답
+@enduml

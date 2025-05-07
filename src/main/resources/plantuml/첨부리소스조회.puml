@@ -1,0 +1,13 @@
+@startuml
+
+actor Mobile
+
+Mobile -> GroupAPI : 1. 알림 조회 요청
+GroupAPI -> Mobile : 2. 알림 조회 응답
+Mobile -> GroupAPI : 3. 알림 리소스 조회 요청 GET /api/v1/notification-groups/{groupId}/notifications/{notificationId}/attachments
+GroupAPI -> Mobile : 4. 알림 리소스 조회 응답
+Mobile -> FileAPI : 5. 파일 메타 데이터 조회 요청
+FileAPI -> Mobile : 6. 파일 메타 데이터 조회 응답
+Mobile -> CloudFront : 7. 6 응답의 accessUrl로 실제 파일 접근
+
+@enduml

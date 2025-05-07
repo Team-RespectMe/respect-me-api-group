@@ -1,0 +1,10 @@
+<included>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                [%d{yyyy-MM-dd HH:mm:ss}][%highlight(%5level)][${PROJECT_NAME}][${APP_NAME}][%cyan%X{traceId:-null}][%magenta(%logger{36})]   <!-- 로그 레벨 색상 --> --> : %yellow(%msg%n)<!-- 줄바꿈 -->
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+</included>

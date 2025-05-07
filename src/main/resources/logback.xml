@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+    <springProperty name="LOGSTASH_HOST" source="logstash.host" scope="context"/>
+    <springProperty name="PROJECT_NAME" source="spring.application.project" scope="context"/>
+    <springProperty name="APP_NAME" source="spring.application.name" scope="context"/>
+    <springProperty name="APP_ENV" source="app_env" scope="context"/>
+    <include resource="console-appender.xml"/>
+    <include resource="logstash-appender.xml"/>
+
+    <springProfile name="local, test">
+        <root level="DEBUG">
+            <appender-ref ref = "CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="test, prod">
+        <root level="INFO">
+            <appender-ref ref = "LOGSTASH-TEST"/>
+        </root>
+    </springProfile>
+</configuration>
