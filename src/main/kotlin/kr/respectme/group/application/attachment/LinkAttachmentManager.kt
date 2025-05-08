@@ -5,6 +5,7 @@ import kr.respectme.common.error.ForbiddenException
 import kr.respectme.common.error.NotFoundException
 import kr.respectme.common.error.UnsupportedMediaTypeException
 import kr.respectme.group.common.errors.GroupServiceErrorCode
+import kr.respectme.group.domain.attachment.Attachment
 import kr.respectme.group.port.out.persistence.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -34,11 +35,29 @@ class LinkAttachmentManager(
     }
 
     @Transactional
-    fun link(loginId: UUID, request: LinkAttachmentCommand)
-            : AttachmentDto {
-        return handlers.find { handler -> handler.isSupport(request) }
-            ?.linkAttachment(loginId, command = request)
-            ?: throw UnsupportedMediaTypeException(GroupServiceErrorCode.GROUP_NOTIFICATION_NOT_SUPPORTED_ATTACHMENT_TYPE)
+    fun link(loginId: UUID, commands: List<LinkAttachmentCommand>)
+            : List<AttachmentDto> {
+        val existsAttachments = loadAttachmentPort.loadByNotificationId(
+            commands.first().notificationId
+        )
+
+        val deletedAttachments = existsAttachments.filter { attachment ->
+            commands.none { command -> command.resourceId == attachment.resourceId }
+        }
+
+        val newAttachmentCommands = commands.filter { command ->
+            existsAttachments.none { attachment -> attachment.resourceId == command.resourceId }
+        }
+
+        deletedAttachments.forEach { attachment ->
+            saveAttachmentPort.delete(attachment)
+        }
+
+        return newAttachmentCommands.map { command ->
+            handlers.find { handler -> handler.isSupport(command) }
+                ?.linkAttachment(loginId, command = command)
+                ?: throw UnsupportedMediaTypeException(GroupServiceErrorCode.GROUP_NOTIFICATION_NOT_SUPPORTED_ATTACHMENT_TYPE)
+        }
     }
 
     @Transactional

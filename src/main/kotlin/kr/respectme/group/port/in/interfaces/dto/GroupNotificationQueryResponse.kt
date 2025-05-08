@@ -22,8 +22,16 @@ class GroupNotificationQueryResponseConverter(
         element._links.addAll(listOf(
             getSelf(element),
             getGroup(element),
-            getAttachments(element)
+            getAttachments(element),
+            getReport(element)
         ))
+    }
+
+    private fun getReport(element: GroupNotificationQueryResponse): HateoasLink {
+        return HateoasLink(
+            rel = "reports",
+            href = "${msaConfig.getGatewayUrl()}/api/v1/reports"
+        )
     }
 
     private fun getSelf(element: GroupNotificationQueryResponse): HateoasLink {
@@ -69,7 +77,6 @@ class GroupNotificationQueryResponseConverter(
             "    \"dayOfWeeks\": [],\n" +
             "    \"dayInterval\": null,\n" +
             "    \"lastSentAt\": null,\n" +
-            "    \"attachments\": [],\n" +
             "    \"_links\": [\n" +
             "        {\n" +
             "            \"rel\": \"self\",\n" +
@@ -111,8 +118,6 @@ data class GroupNotificationQueryResponse(
     val dayInterval: Int? = null,
     @Schema(description = "Notification 마지막 전송 일시")
     val lastSentAt: Instant? = null,
-    @Schema
-    val attachments: MutableList<AttachmentResponse> = mutableListOf()
 ) : HateoasResponse() {
 
 
