@@ -20,6 +20,12 @@ interface NotificationCommandPort {
                            request: NotificationModifyRequest
     ): NotificationCommandResponse
 
+    fun updateNotification(loginId: UUID,
+                           groupId: UUID,
+                           notificationId: UUID,
+                           request: NotificationModifyRequest)
+    : NotificationCommandResponse
+
     fun deleteNotification(loginId: UUID,
                            groupId: UUID,
                            notificationId: UUID)

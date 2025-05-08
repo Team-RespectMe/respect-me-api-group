@@ -46,9 +46,17 @@ class RestNotificationCommandAdapter(
         val notification = NotificationCommandResponse.valueOf(
             notificationCommandUseCase.createNotification(loginId, groupId, command)
         )
-        request.attachments.forEach { attachmentRequest ->
-            attachmentManager.link(loginId, LinkAttachmentCommand.of(groupId, notification.notificationId, attachmentRequest))
-        }
+//        request.attachments.forEach { attachmentRequest ->
+//            attachmentManager.link(loginId, LnkAttachmentCommand.of(groupId, notification.notificationId, attachmentRequest))
+//        }
+        attachmentManager.link(loginId,
+            request.attachments.map { attachmentRequest ->
+                LinkAttachmentCommand.of(groupId=groupId,
+                    notificationId = notification.notificationId,
+                    request = attachmentRequest
+                )
+            }.toList()
+        )
 
         return notification
     }
@@ -69,6 +77,34 @@ class RestNotificationCommandAdapter(
         return NotificationCommandResponse.valueOf(
             notificationCommandUseCase.updateNotification(loginId, groupId, notificationId, command)
         )
+    }
+
+    @Operation(summary = "알림의 본문과 첨부 정보를 함께 수정", description = "알림의 본문과 첨부 정보를 함께 수정합니다.")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "알림 본문 및 첨부 정보 수정 성공"),
+    ])
+    @PatchMapping("notification-groups/{groupId}/notifications/{notificationId}")
+    @ApplicationResponse(status = HttpStatus.OK, message = "notification content and attachments updated.")
+    override fun updateNotification(
+        @LoginMember loginId: UUID,
+        @PathVariable groupId: UUID,
+        @PathVariable notificationId: UUID,
+        @RequestBody @Valid request: NotificationModifyRequest
+    ): NotificationCommandResponse {
+        val command = NotificationModifyCommand.valueOf(request)
+        val notification = NotificationCommandResponse.valueOf(
+            notificationCommandUseCase.updateNotification(loginId, groupId, notificationId, command)
+        )
+        attachmentManager.link(loginId,
+            request.attachments.map { attachmentRequest ->
+                LinkAttachmentCommand.of(groupId=groupId,
+                    notificationId = notification.notificationId,
+                    request = attachmentRequest
+                )
+            }.toList()
+        )
+
+        return notification
     }
 
     @Operation(summary = "알림 단건 삭제", description = "지정된 그룹의 알림 하나를 삭제합니다.")

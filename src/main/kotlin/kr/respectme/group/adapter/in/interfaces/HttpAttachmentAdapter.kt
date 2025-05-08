@@ -55,14 +55,14 @@ class HttpAttachmentAdapter(
                                 @PathVariable notificationId: UUID,
                                 @RequestBody request: AttachmentRequest
     ): AttachmentResponse {
-        val result = attachmentManager.link(loginId, LinkAttachmentCommand(
+        val result = attachmentManager.link(loginId, listOf(LinkAttachmentCommand(
             notificationId = notificationId,
             groupId = groupId,
             type = request.type,
             resourceId = request.resourceId
-        ))
+        )))
 
-        return AttachmentResponse.of(result)
+        return AttachmentResponse.of(result[0])
     }
 
     @DeleteMapping("notification-groups/{groupId}/notifications/{notificationId}/attachments/{attachmentId}")

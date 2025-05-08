@@ -33,6 +33,8 @@ class FileAttachmentHandler(
 
         if ( notification.getSenderId() != loginId ) throw ForbiddenException(GroupServiceErrorCode.GROUP_MEMBER_NOT_ENOUGH_PERMISSION)
 
+        if ( notification.getGroupId() != command.groupId ) throw ForbiddenException(GroupServiceErrorCode.GROUP_MEMBER_NOT_ENOUGH_PERMISSION)
+
         val attachment = loadAttachmentPort.loadByResourceIdAndNotificationId(
             command.resourceId,
             command.notificationId
