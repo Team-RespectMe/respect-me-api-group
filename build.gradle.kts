@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "kr.respect-me"
-version = "0.5.2"
+version = "0.5.5"
 
 repositories {
     mavenCentral()

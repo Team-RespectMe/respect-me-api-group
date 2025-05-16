@@ -55,9 +55,8 @@ class HttpAttachmentAdapter(
                                 @PathVariable notificationId: UUID,
                                 @RequestBody request: AttachmentRequest
     ): AttachmentResponse {
-        val result = attachmentManager.link(loginId, listOf(LinkAttachmentCommand(
-            notificationId = notificationId,
-            groupId = groupId,
+        val result = attachmentManager.link(loginId, groupId, notificationId,
+        listOf(LinkAttachmentCommand(
             type = request.type,
             resourceId = request.resourceId
         )))

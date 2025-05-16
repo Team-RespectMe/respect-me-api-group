@@ -17,6 +17,7 @@ import kr.respectme.group.port.`in`.interfaces.NotificationCommandPort
 import kr.respectme.group.port.`in`.interfaces.dto.NotificationCommandResponse
 import kr.respectme.group.port.`in`.interfaces.dto.NotificationCreateRequest
 import kr.respectme.group.port.`in`.interfaces.dto.NotificationModifyRequest
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -28,6 +29,8 @@ class RestNotificationCommandAdapter(
     private val notificationCommandUseCase: NotificationCommandUseCase,
     private val attachmentManager: LinkAttachmentManager,
 ): NotificationCommandPort {
+
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     @Operation(summary = "알림 생성", description = "알림 생성")
     @ApiResponses(
@@ -49,7 +52,7 @@ class RestNotificationCommandAdapter(
 //        request.attachments.forEach { attachmentRequest ->
 //            attachmentManager.link(loginId, LnkAttachmentCommand.of(groupId, notification.notificationId, attachmentRequest))
 //        }
-        attachmentManager.link(loginId,
+        attachmentManager.link(loginId, groupId, notification.notificationId,
             request.attachments.map { attachmentRequest ->
                 LinkAttachmentCommand.of(groupId=groupId,
                     notificationId = notification.notificationId,
@@ -95,14 +98,19 @@ class RestNotificationCommandAdapter(
         val notification = NotificationCommandResponse.valueOf(
             notificationCommandUseCase.updateNotification(loginId, groupId, notificationId, command)
         )
-        attachmentManager.link(loginId,
+
+        val attachments = if (request.attachments.isEmpty()) {
+            emptyList()
+        } else {
             request.attachments.map { attachmentRequest ->
                 LinkAttachmentCommand.of(groupId=groupId,
                     notificationId = notification.notificationId,
                     request = attachmentRequest
                 )
             }.toList()
-        )
+        }
+
+        attachmentManager.link(loginId, groupId, notificationId, attachments)
 
         return notification
     }

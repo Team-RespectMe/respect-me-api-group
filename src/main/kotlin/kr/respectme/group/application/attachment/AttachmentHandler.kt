@@ -12,7 +12,7 @@ interface AttachmentHandler {
      * @param command 첨부 리소스 링크 요청
      * @return AttachmentDto
      */
-    fun linkAttachment(loginId: UUID, command: LinkAttachmentCommand): AttachmentDto
+    fun linkAttachment(loginId: UUID, groupId: UUID, notificationId: UUID, command: LinkAttachmentCommand): AttachmentDto
 
     /**
      * Attachment을 지원하는지 확인하는 메서드
