@@ -35,15 +35,17 @@ class LinkAttachmentManager(
     }
 
     @Transactional
-    fun link(loginId: UUID, commands: List<LinkAttachmentCommand>)
-            : List<AttachmentDto> {
-        val existsAttachments = loadAttachmentPort.loadByNotificationId(
-            commands.first().notificationId
-        )
-
+    fun link(loginId: UUID,
+             groupId: UUID,
+             notificationId: UUID,
+             commands: List<LinkAttachmentCommand>)
+    : List<AttachmentDto> {
+        val existsAttachments = loadAttachmentPort.loadByNotificationId(notificationId)
         val deletedAttachments = existsAttachments.filter { attachment ->
             commands.none { command -> command.resourceId == attachment.resourceId }
         }
+
+        logger.debug("deleted attachments list : $deletedAttachments")
 
         val newAttachmentCommands = commands.filter { command ->
             existsAttachments.none { attachment -> attachment.resourceId == command.resourceId }
@@ -55,7 +57,7 @@ class LinkAttachmentManager(
 
         return newAttachmentCommands.map { command ->
             handlers.find { handler -> handler.isSupport(command) }
-                ?.linkAttachment(loginId, command = command)
+                ?.linkAttachment(loginId, groupId, notificationId, command = command)
                 ?: throw UnsupportedMediaTypeException(GroupServiceErrorCode.GROUP_NOTIFICATION_NOT_SUPPORTED_ATTACHMENT_TYPE)
         }
     }

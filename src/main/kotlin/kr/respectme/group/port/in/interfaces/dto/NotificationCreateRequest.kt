@@ -24,11 +24,13 @@ data class NotificationCreateRequest(
             "REPEATED_DAY_INTERVAL: 매일 일정 간격 <br/>")
     @field: NotNull(message = "Notification type must not be null or empty.")
     val type: NotificationType,
-    @Schema(description = "알림에 첨부될 리소스", example = """{
-            "type" : "FILE",
-            "resourceId": "791763ca-5da8-4aca-9c94-aa9d22a5fd10",
-        }
-    """)
+    @Schema(description = "알림에 첨부될 리소스", example =
+            "[\n" +
+            "\"{\"" +
+            "    \"type\" : \"FILE\",\n" +
+            "    \"resourceId\": \"791763ca-5da8-4aca-9c94-aa9d22a5fd10\"\n" +
+            "}\n" +
+            "]")
     val attachments: List<AttachmentRequest> = emptyList()
 
 //    @Schema(required = false, example = "2021-08-01T00:00:00Z", description = "예약 알람 시간, 타입이 SCHEDULED 일 때 필수")

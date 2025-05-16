@@ -5,8 +5,6 @@ import kr.respectme.group.port.`in`.interfaces.dto.AttachmentRequest
 import java.util.UUID
 
 class LinkAttachmentCommand(
-    val groupId: UUID,
-    val notificationId: UUID,
     val type: AttachmentType,
     val resourceId: UUID,
 ) {
@@ -18,8 +16,6 @@ class LinkAttachmentCommand(
                request: AttachmentRequest): LinkAttachmentCommand {
             return LinkAttachmentCommand(
                 type = request.type,
-                groupId = groupId,
-                notificationId = notificationId,
                 resourceId = request.resourceId,
             )
         }
