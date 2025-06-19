@@ -4,9 +4,9 @@ import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    kotlin("jvm") version "1.9.24"
-    kotlin("kapt") version "1.9.24"
-    kotlin("plugin.spring") version "1.9.24"
+    kotlin("jvm") version "1.9.25"
+    kotlin("kapt") version "1.9.25"
+    kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.3.2"
     id("io.spring.dependency-management") version "1.1.6"
     id("com.bmuschko.docker-remote-api") version "9.3.1"
@@ -18,7 +18,6 @@ version = "0.5.5"
 repositories {
     mavenCentral()
     maven { url = uri("https://jitpack.io") }
-
 }
 
 allOpen {
@@ -35,7 +34,36 @@ kotlin {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+
+val queryDslVersion = "6.11"
+val querydslDir = "src/main/generated"
+//val querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile.path
+
+
+sourceSets {
+    getByName("main").java.srcDirs(querydslDir)
+}
+
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KaptGenerateStubs> {
+    kapt {
+        arguments {
+            arg("querydsl.generated", querydslDir)
+        }
+    }
+}
+
+tasks.withType<JavaCompile> {
+    options.generatedSourceOutputDirectory.set(file(querydslDir))
+}
+
+tasks.named("clean") {
+    doLast {
+        file(querydslDir).deleteRecursively()
     }
 }
 
@@ -58,9 +86,14 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
 
     // query dsl
-    implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
-    implementation("com.querydsl:querydsl-apt:5.1.0:jakarta")
-    kapt("com.querydsl:querydsl-apt:5.1.0:jakarta")
+    implementation("io.github.openfeign.querydsl:querydsl-core:${queryDslVersion}")
+    implementation("io.github.openfeign.querydsl:querydsl-jpa:${queryDslVersion}")
+    kapt("io.github.openfeign.querydsl:querydsl-apt:$queryDslVersion:jpa")
+    kapt("jakarta.annotation:jakarta.annotation-api")
+    kapt("jakarta.persistence:jakarta.persistence-api")
+//    implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
+//    implementation("com.querydsl:querydsl-apt:5.1.0:jakarta")
+//    kapt("com.querydsl:querydsl-apt:5.1.0:jakarta")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
